@@ -40,6 +40,28 @@ def plot_fitting_forecast(stock_symbol, fitting_dates, closing_prices, Fitting_S
     ax_forecast.plot(forecast_dates, actual_forecast_prices, label="Actual (Forecast)", color='darkgreen', linewidth=2)
     ax_forecast.plot(forecast_dates, S_forecast[:len(forecast_dates)], label="Forecast", color='orange', linewidth=2)
     
+    if fitting_dates and forecast_dates and len(Fitting_S_n_list) > 0 and len(S_forecast) > 0:
+        last_fitting_date = fitting_dates[-1]
+        last_fitting_price = Fitting_S_n_list[len(fitting_dates)-1]
+        
+        first_forecast_date = forecast_dates[0]
+        first_forecast_price = S_forecast[0]
+        
+        ax_forecast.plot([last_fitting_date, first_forecast_date], 
+                        [last_fitting_price, first_forecast_price], 
+                        color='orange', linewidth=2, linestyle='-')
+    
+    if fitting_dates and forecast_dates and len(closing_prices) > 0 and len(actual_forecast_prices) > 0:
+        last_actual_fitting_date = fitting_dates[-1]
+        last_actual_fitting_price = closing_prices[-1]
+        
+        first_actual_forecast_date = forecast_dates[0]
+        first_actual_forecast_price = actual_forecast_prices[0]
+        
+        ax_forecast.plot([last_actual_fitting_date, first_actual_forecast_date], 
+                        [last_actual_fitting_price, first_actual_forecast_price], 
+                        color='darkgreen', linewidth=2, linestyle='-')
+    
     # Add vertical line to separate fitting and forecast
     if fitting_dates and forecast_dates:
         ax_forecast.axvline(x=fitting_dates[-1], color='red', linestyle='--', 
@@ -60,7 +82,7 @@ def plot_fitting_forecast(stock_symbol, fitting_dates, closing_prices, Fitting_S
     # Display table for fitting + forecast data
     display_fitting_forecast_table(stock_symbol, fitting_dates, closing_prices, Fitting_S_n_list,
                                   forecast_dates, S_forecast, actual_forecast_prices)
-
+        
 def plot_mape(stock_symbol, mape_data, period_type, mean_mape):
     st.subheader(f"📉 Hasil MAPE {period_type} - Rata-rata: {mean_mape:.2f}%")
     fig_mape, ax_mape = plt.subplots(figsize=(10, 6))
