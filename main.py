@@ -21,11 +21,16 @@ def main():
     stock_symbol, start_date, training_days, forecast_days, end_date, forecast_end_date = create_ui()
 
     # Validation
+    today = datetime.today().date()
+    max_fitting_date = today - timedelta(days=2)  # 2 days before today
     if start_date >= end_date:
         st.error("Start date harus lebih kecil dari end date!")
         return
     elif end_date >= forecast_end_date:
         st.error("End date harus lebih kecil dari forecast end date!")
+        return
+    elif end_date > max_fitting_date:
+        st.error(f"End date ({end_date.strftime('%d/%m/%Y')}) tidak boleh melebihi {max_fitting_date.strftime('%d/%m/%Y')} (2 hari sebelum hari ini: {today.strftime('%d/%m/%Y')})!")
         return
 
     # Run Analysis Button
@@ -39,9 +44,15 @@ def main():
                     stock_symbol, start_date, end_date, forecast_end_date
                 )
                 
-                if fitting_data is None or len(fitting_data) < 4:
-                    st.error("Data tidak cukup untuk melakukan forecasting. Minimal 4 data point diperlukan.")
+                if fitting_data is None:
+                    st.error(f"Tidak dapat mengambil data untuk simbol {stock_symbol}. Pastikan simbol saham benar (contoh: BBCA.JK untuk saham Indonesia).")
+                    st.info("Silakan periksa simbol saham di Yahoo Finance atau coba simbol lain.")
                     return
+                
+                if len(fitting_data) < 4:
+                    st.error("Data tidak cukup untuk melakukan forecasting. Minimal 4 data point diperlukan. Coba perpanjang periode fitting.")
+                    return
+                
                 if isinstance(fitting_data['Close'], pd.DataFrame):
                     st.error("Unexpected data structure: 'Close' column is a DataFrame. Please check the stock symbol or data source.")
                     logging.error(f"fitting_data['Close'] is a DataFrame: {fitting_data['Close'].head()}")
@@ -156,6 +167,9 @@ def main():
                     st.error(f"Error creating Excel file: {str(e)}")
                     logging.error(f"Excel creation error: {e}")
                     
+        except ValueError as ve:
+            st.error(str(ve))
+            st.info("Silakan periksa simbol saham di Yahoo Finance atau coba simbol lain.")
         except Exception as e:
             st.error(f"Terjadi kesalahan: {str(e)}")
             logging.error(f"Main execution error: {e}")

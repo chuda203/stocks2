@@ -13,19 +13,54 @@ def create_ui():
     
     with col1:
         st.markdown("**Stock Symbol**")
-        stock_symbol = st.text_input("", value="BBCA.JK", key="stock_input", label_visibility="collapsed")
+        stock_symbol = st.text_input(
+            "", 
+            value="BBCA.JK", 
+            key="stock_input", 
+            label_visibility="collapsed",
+            # help="Masukkan simbol saham (contoh: BBCA.JK untuk saham Indonesia). Cek simbol valid di: https://finance.yahoo.com/lookup"
+        )
     
     with col2:
         st.markdown("**Fitting Start Date**")
-        start_date = st.date_input("", value=datetime(2024, 1, 1), key="start_date_input", label_visibility="collapsed")
+        today = datetime.today().date()
+        max_fitting_date = today - timedelta(days=2)  # 2 days before today
+        start_date = st.date_input(
+            "", 
+            value=datetime(2024, 1, 1).date(), 
+            max_value=max_fitting_date,
+            key="start_date_input", 
+            label_visibility="collapsed",
+            help=f"Tanggal mulai tidak boleh melebihi {max_fitting_date.strftime('%d/%m/%Y')} (2 hari sebelum hari ini: {today.strftime('%d/%m/%Y')})."
+        )
     
     with col3:
         st.markdown("**Fitting Period (Day)**")
-        training_days = st.number_input("", min_value=1, max_value=365, value=120, step=1, key="training_days", label_visibility="collapsed")
+        max_training_days = (max_fitting_date - start_date).days
+        if max_training_days < 1:
+            max_training_days = 1
+        training_days = st.number_input(
+            "", 
+            min_value=1, 
+            max_value=max_training_days, 
+            value=min(120, max_training_days), 
+            step=1, 
+            key="training_days", 
+            label_visibility="collapsed",
+            help=f"Periode fitting maksimum {max_training_days} hari hingga {max_fitting_date.strftime('%d/%m/%Y')}."
+        )
     
     with col4:
         st.markdown("**Forecast Period (Day)**")
-        forecast_days = st.number_input("", min_value=1, max_value=365, value=60, step=1, key="forecast_days", label_visibility="collapsed")
+        forecast_days = st.number_input(
+            "", 
+            min_value=1, 
+            value=60, 
+            step=1, 
+            key="forecast_days", 
+            label_visibility="collapsed",
+            help="Masukkan jumlah hari untuk periode forecast."
+        )
     
     # Calculate dates based on training and forecast days
     end_date = start_date + timedelta(days=training_days)
@@ -39,14 +74,28 @@ def create_ui():
             use_custom_end = st.checkbox("Custom Fitting End Date", value=False)
             if use_custom_end:
                 st.markdown("**Custom Fitting End Date**")
-                custom_end_date = st.date_input("", value=datetime(2024, 4, 30), key="custom_end", label_visibility="collapsed")
+                custom_end_date = st.date_input(
+                    "", 
+                    value=min(datetime(2024, 4, 30).date(), max_fitting_date), 
+                    max_value=max_fitting_date,
+                    key="custom_end", 
+                    label_visibility="collapsed",
+                    help=f"Tanggal akhir fitting tidak boleh melebihi {max_fitting_date.strftime('%d/%m/%Y')} (2 hari sebelum hari ini: {today.strftime('%d/%m/%Y')})."
+                )
                 end_date = custom_end_date
         
         with col_adv2:
             use_custom_forecast_end = st.checkbox("Custom Forecast End Date", value=False)
             if use_custom_forecast_end:
                 st.markdown("**Custom Forecast End Date**")
-                custom_forecast_end = st.date_input("", value=datetime(2024, 6, 29), key="custom_forecast_end", label_visibility="collapsed")
+                custom_forecast_end = st.date_input(
+                    "", 
+                    value=datetime(2024, 6, 29).date(),
+                    min_value=end_date,
+                    key="custom_forecast_end", 
+                    label_visibility="collapsed",
+                    help="Pilih tanggal akhir untuk periode forecast."
+                )
                 forecast_end_date = custom_forecast_end
     
     # Ringkasan Input

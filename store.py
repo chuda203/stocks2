@@ -2,11 +2,26 @@ import pandas as pd
 import yfinance as yf
 import logging
 
+def validate_stock_symbol(stock_name):
+    """Validate if the stock symbol exists."""
+    try:
+        ticker = yf.Ticker(stock_name)
+        # Fetch minimal data to check if symbol is valid
+        info = ticker.info
+        return True
+    except Exception as e:
+        logging.error(f"Invalid stock symbol {stock_name}: {e}")
+        return False
+
 def get_data_with_dates(stock_name, start_date, end_date, forecast_end_date):
     """
     Get stock data with proper date alignment for both fitting and forecasting
     """
     try:
+        # Validate stock symbol first
+        if not validate_stock_symbol(stock_name):
+            raise ValueError(f"Invalid stock symbol: {stock_name}")
+
         # Download all data from start_date to forecast_end_date
         all_data = yf.download(stock_name, start=start_date, end=forecast_end_date, auto_adjust=False)
         
@@ -28,10 +43,13 @@ def get_data_with_dates(stock_name, start_date, end_date, forecast_end_date):
         
         return fitting_data, forecast_data
         
+    except ValueError as ve:
+        logging.error(f"Validation error: {ve}")
+        raise ve
     except Exception as e:
         logging.error(f"Error getting data for {stock_name}: {e}")
         return None, None
-
+    
 def get_data(stock_name, start_date, end_date):
     """Legacy function for backward compatibility"""
     data = yf.download(stock_name, start=start_date, end=end_date, auto_adjust=False)
@@ -61,3 +79,4 @@ def filter_prices_duplicates(data_df):
     logging.info(f"Filtered data: {len(filtered_data)} points after removing {len(data_df) - len(filtered_data)} duplicates")
     
     return filtered_data
+
