@@ -18,7 +18,7 @@ def create_ui():
             value="BBCA.JK", 
             key="stock_input", 
             label_visibility="collapsed",
-            # help="Masukkan simbol saham (contoh: BBCA.JK untuk saham Indonesia). Cek simbol valid di: https://finance.yahoo.com/lookup"
+            help="Masukkan simbol saham (contoh: BBCA.JK untuk saham Indonesia). Cek simbol valid di: https://finance.yahoo.com/lookup"
         )
     
     with col2:
@@ -90,7 +90,7 @@ def create_ui():
                 st.markdown("**Custom Forecast End Date**")
                 custom_forecast_end = st.date_input(
                     "", 
-                    value=datetime(2024, 6, 29).date(),
+                    value=end_date + timedelta(days=60),  # Dynamic default: 60 days after end_date
                     min_value=end_date,
                     key="custom_forecast_end", 
                     label_visibility="collapsed",
