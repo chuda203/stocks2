@@ -45,7 +45,7 @@ def main():
                 )
                 
                 if fitting_data is None:
-                    st.error(f"Tidak dapat mengambil data untuk simbol {stock_symbol}. Pastikan menggunakan simbol saham benar, untuk saham Indonesia dapat ditulis dengan format [simbol saham].JK (contoh: BBCA.JK untuk saham Bank Central Asia Tbk.")
+                    st.error(f"Tidak dapat mengambil data untuk simbol {stock_symbol}. Pastikan menggunakan simbol saham benar, untuk saham Indonesia dapat ditulis dengan format [simbol saham].JK (contoh: BBCA.JK untuk saham Bank Central Asia Tbk.)")
                     st.info("Silakan periksa simbol saham di Yahoo Finance atau coba simbol lain.")
                     return
                 
