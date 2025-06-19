@@ -19,8 +19,8 @@ def create_ui():
             key="stock_input", 
             label_visibility="collapsed",
             help="Masukkan simbol saham (contoh: BBCA.JK untuk saham Indonesia). Cek simbol valid di: https://finance.yahoo.com/lookup"
-        )
-    
+        ).upper()    
+        
     with col2:
         st.markdown("**Fitting Start Date**")
         today = datetime.today().date()
