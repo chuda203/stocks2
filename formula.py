@@ -14,21 +14,21 @@ def determine_v_n(Sn, Sn_1):
 
 def determine_alpha_n(Sn_minus_4, Sn_minus_3, Sn_minus_2, Sn_minus_1):
     AA = (Sn_minus_2 - 2 * Sn_minus_3 + Sn_minus_4)
-    BB = (Sn_minus_1 - Sn_minus_2)
+    BB = (Sn_minus_2 - Sn_minus_3)
     CC = (Sn_minus_1 - 2 * Sn_minus_2 + Sn_minus_3)
-    DD = (Sn_minus_2 - Sn_minus_3)
+    DD = (Sn_minus_3 - Sn_minus_4)
     alpha_pembilang = (AA * BB) - (CC * DD)
-    alpha_penyebut = DD * BB * (DD - BB) 
+    alpha_penyebut =   BB * DD * (BB - DD) 
     if abs(alpha_penyebut) < 1e-12:
         return 1e-12  
     return (alpha_pembilang/alpha_penyebut)
 
 def determine_beta_n(Sn_minus_3, Sn_minus_2, Sn_minus_1, alpha_n):
     CC = (Sn_minus_1 - 2 * Sn_minus_2 + Sn_minus_3)
-    BB = (Sn_minus_1 - Sn_minus_2)
+    BB = (Sn_minus_2 - Sn_minus_3)
     if abs(BB) < 1e-12:
         return 1e-12 
-    return (CC-(alpha_n * (BB**2)))/(BB * 1) #delta_t = 1
+    return (CC-(alpha_n * (BB**2)))/(BB)
 
 def determine_h_n(v_1, alpha_n, beta_n):
     if abs(alpha_n) < 1e-12:
