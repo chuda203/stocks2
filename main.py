@@ -96,7 +96,8 @@ class StockVisualizer:
     @staticmethod
     def display_results(stock_symbol, fitting_data, forecast_data, start_date, end_date, 
                        forecast_end_date, fitting_prices, fitting_dates, Fitting_S_n_list, 
-                       S_forecast, forecast_dates, actual_forecast_prices, mape_fit, mape_forecast):
+                       S_forecast, forecast_dates, actual_forecast_prices, mape_fit, mape_forecast,
+                       input_forecast_days): 
         """Display all results including tables and charts."""
         st.success("Selesai!")
 
@@ -120,6 +121,14 @@ class StockVisualizer:
             with col4:
                 forecast_days_actual = len(S_forecast) if S_forecast else 0
                 st.metric("Periode Forecast", f"{forecast_days_actual} hari")
+
+            # Display warning if forecast period is limited
+            if input_forecast_days > forecast_days_actual and forecast_days_actual == 268:
+                st.warning(
+                    f"⚠️ Catatan: Periode forecast yang diminta ({input_forecast_days} hari) "
+                    f"telah dibatasi menjadi {forecast_days_actual} hari untuk menjaga efisiensi "
+                    f"perhitungan dan akurasi forecasting."
+                )
 
             # Plot charts
             plot_fitting(stock_symbol, fitting_dates, fitting_prices, Fitting_S_n_list)
@@ -193,7 +202,7 @@ class StockForecaster:
                      f"(2 hari sebelum hari ini: {self.today.strftime('%d/%m/%Y')})!")
             return False
         return True
-
+    
     def run(self):
         """Main method to run the forecasting application."""
         run_forecast = st.button("🔗 Submit Data", use_container_width=True, type="primary")
@@ -240,7 +249,8 @@ class StockForecaster:
                     self.stock_symbol, fitting_data, forecast_data, self.start_date, 
                     self.end_date, self.forecast_end_date, fitting_prices, fitting_dates, 
                     Fitting_S_n_list, S_forecast, forecast_dates, actual_forecast_prices, 
-                    mape_fit, mape_forecast
+                    mape_fit, mape_forecast,
+                    self.forecast_days 
                 )
 
                 # Export to Excel
